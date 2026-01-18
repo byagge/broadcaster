@@ -1,0 +1,4 @@
+telethon
+pyyaml
+pyTelegramBotAPI
+python-dotenv 

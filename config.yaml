@@ -1,0 +1,25 @@
+# Настройки аккаунта
+api_id: 
+api_hash: ''
+session_name: 'simple_sender.session'
+
+# Сообщение для рассылки
+message: |
+  **Ищу партнера на ОП**
+  
+  Здесь может быть любой текст с поддержкой Markdown.
+  
+  __Спасибо за внимание!__
+
+# Задержки (в секундах)
+min_delay: 30
+max_delay: 60
+
+# Дополнительные настройки
+disable_link_preview: true
+parse_mode: 'md'
+
+# Настройки имитации человека
+typing_delay: true
+typing_min: 2
+typing_max: 5 

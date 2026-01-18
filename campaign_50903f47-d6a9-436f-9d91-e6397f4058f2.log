@@ -1,0 +1,44 @@
+2026-01-16 17:02:15,716 - INFO - ==================================================
+2026-01-16 17:02:15,718 - INFO - [SENDER] Начало выполнения рассылки
+2026-01-16 17:02:15,718 - INFO - [SENDER] Campaign ID: 50903f47-d6a9-436f-9d91-e6397f4058f2
+2026-01-16 17:02:15,725 - INFO - [SENDER] Campaign title: 12
+2026-01-16 17:02:15,725 - INFO - [SENDER] Account IDs: ['04657991-1dda-41bd-be9d-7b12edb3c295']
+2026-01-16 17:02:15,726 - INFO - [SENDER] Chats file: chats.txt
+2026-01-16 17:02:15,726 - INFO - [SENDER] Message text: False
+2026-01-16 17:02:15,727 - INFO - [SENDER] Source link: https://t.me/chanel10fp/3
+2026-01-16 17:02:15,727 - INFO - [SENDER] Use forward: True
+2026-01-16 17:02:15,729 - INFO - [SENDER] Account: user (user.session)
+2026-01-16 17:02:15,729 - INFO - ==================================================
+2026-01-16 17:02:15,729 - INFO - Конфигурация загружена из Campaign/Account
+2026-01-16 17:02:15,730 - INFO - [SENDER] Загрузка чатов из файла: chats.txt
+2026-01-16 17:02:15,731 - INFO - [SENDER] Загружен чат: https://t.me/trafikstt
+2026-01-16 17:02:15,731 - INFO - [SENDER] Загружен чат: https://t.me/logovo_traferov
+2026-01-16 17:02:15,731 - INFO - [SENDER] Загружен чат: https://t.me/trafficlink
+2026-01-16 17:02:15,731 - INFO - [SENDER] Загружен чат: https://t.me/KuplyTrafik
+2026-01-16 17:02:15,731 - INFO - [SENDER] Загружен чат: https://t.me/buytraf
+2026-01-16 17:02:15,732 - INFO - [SENDER] Всего загружено 5 чатов
+2026-01-16 17:02:18,821 - INFO - Подключен как: Arix (@byarix)
+2026-01-16 17:02:18,822 - INFO - [TIME] Режим ограничен по времени: 2 минут, до 2026-01-16 17:04:18.822984
+2026-01-16 17:02:18,823 - INFO - [START] Начинаем рассылку в 5 чатов
+2026-01-16 17:02:18,823 - INFO - [ITERATION 1] Начинаем новый цикл по чатам
+2026-01-16 17:02:18,823 - INFO - [1/5] Обрабатываем: https://t.me/trafikstt
+2026-01-16 17:02:23,966 - INFO - [OK] Отправлено в ПЕРЕЛИВЩИКИ | ТРАФИК
+2026-01-16 17:02:23,967 - INFO - [DELAY] Ждём 3.2 секунд...
+2026-01-16 17:02:27,175 - INFO - [2/5] Обрабатываем: https://t.me/logovo_traferov
+2026-01-16 17:02:32,806 - ERROR - [ERROR] Ошибка отправки в Логово Траферов | Покупка/Продажа трафика: RPCError 403: CHAT_SEND_WEBPAGE_FORBIDDEN (caused by ForwardMessagesRequest)
+2026-01-16 17:02:32,807 - INFO - [DELAY] Ждём 5.3 секунд...
+2026-01-16 17:02:38,121 - INFO - [3/5] Обрабатываем: https://t.me/trafficlink
+2026-01-16 17:02:43,746 - ERROR - [ERROR] Ошибка отправки в БИРЖА ТРАФИКА | WHY 2: A wait of 2748 seconds is required before sending another message in this chat (caused by ForwardMessagesRequest)
+2026-01-16 17:02:43,746 - INFO - [DELAY] Ждём 5.2 секунд...
+2026-01-16 17:02:49,005 - INFO - [4/5] Обрабатываем: https://t.me/KuplyTrafik
+2026-01-16 17:02:55,100 - INFO - [OK] Отправлено в Куплю/Продам трафик Tik Tok Reels Shorts
+2026-01-16 17:02:55,100 - INFO - [DELAY] Ждём 5.8 секунд...
+2026-01-16 17:03:00,922 - INFO - [5/5] Обрабатываем: https://t.me/buytraf
+2026-01-16 17:03:06,084 - INFO - [OK] Отправлено в Куплю/Продам трафик Tik Tok Reels Shorts
+2026-01-16 17:03:06,085 - INFO - [DELAY] Ждём 5.3 секунд...
+2026-01-16 17:03:11,355 - INFO - [FINISH] Рассылка завершена!
+2026-01-16 17:03:11,356 - INFO - [STATS] Отправлено: 3
+2026-01-16 17:03:11,356 - INFO - [STATS] Ошибок: 2
+2026-01-16 17:03:11,356 - INFO - [STATS] Пропущено: 0
+2026-01-16 17:03:11,357 - INFO - [STATS] Вступили в чаты: 0
+2026-01-16 17:03:11,408 - INFO - Отключен от Telegram

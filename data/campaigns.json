@@ -1,0 +1,207 @@
+{
+  "e1b6d993-aaf6-49ed-b1f6-b925966f35df": {
+    "id": "e1b6d993-aaf6-49ed-b1f6-b925966f35df",
+    "title": "1",
+    "account_ids": [],
+    "chats_file": "chats.txt",
+    "message_text": "1",
+    "source_link": null,
+    "use_forward": false,
+    "min_delay": 30.0,
+    "max_delay": 60.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": null,
+    "status": "idle",
+    "stats": {
+      "sent": 0,
+      "failed": 0,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": null,
+    "end_time": null
+  },
+  "9da74bf6-44c4-4224-8438-c261575d13ef": {
+    "id": "9da74bf6-44c4-4224-8438-c261575d13ef",
+    "title": "1",
+    "account_ids": [],
+    "chats_file": "chats.txt",
+    "message_text": null,
+    "source_link": "https://t.me/chanel10fp/3",
+    "use_forward": true,
+    "min_delay": 30.0,
+    "max_delay": 60.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": null,
+    "status": "idle",
+    "stats": {
+      "sent": 0,
+      "failed": 0,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": null,
+    "end_time": null
+  },
+  "9caa63a8-5934-4467-b706-4bb74f805f6f": {
+    "id": "9caa63a8-5934-4467-b706-4bb74f805f6f",
+    "title": "1",
+    "account_ids": [
+      "04657991-1dda-41bd-be9d-7b12edb3c295"
+    ],
+    "chats_file": "chats.txt",
+    "message_text": null,
+    "source_link": "https://t.me/chanel10fp/3",
+    "use_forward": true,
+    "min_delay": 10.0,
+    "max_delay": 11.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": 2,
+    "status": "idle",
+    "stats": {
+      "sent": 0,
+      "failed": 0,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": null,
+    "end_time": null
+  },
+  "2f07c8f4-82f9-4415-b7a9-dce6278f0a77": {
+    "id": "2f07c8f4-82f9-4415-b7a9-dce6278f0a77",
+    "title": "2",
+    "account_ids": [
+      "04657991-1dda-41bd-be9d-7b12edb3c295"
+    ],
+    "chats_file": "chats.txt",
+    "message_text": null,
+    "source_link": "https://t.me/chanel10fp/3",
+    "use_forward": true,
+    "min_delay": 3.0,
+    "max_delay": 8.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": 2,
+    "status": "idle",
+    "stats": {
+      "sent": 0,
+      "failed": 0,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": null,
+    "end_time": null
+  },
+  "ea564d8c-3f0f-4bfc-8b05-6672eefa0d86": {
+    "id": "ea564d8c-3f0f-4bfc-8b05-6672eefa0d86",
+    "title": "3",
+    "account_ids": [
+      "04657991-1dda-41bd-be9d-7b12edb3c295"
+    ],
+    "chats_file": "chats.txt",
+    "message_text": null,
+    "source_link": "https://t.me/chanel10fp/3",
+    "use_forward": true,
+    "min_delay": 3.0,
+    "max_delay": 7.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": 2,
+    "status": "idle",
+    "stats": {
+      "sent": 0,
+      "failed": 0,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": null,
+    "end_time": null
+  },
+  "be080188-7d20-41c8-9770-7177e176868f": {
+    "id": "be080188-7d20-41c8-9770-7177e176868f",
+    "title": "4",
+    "account_ids": [
+      "04657991-1dda-41bd-be9d-7b12edb3c295"
+    ],
+    "chats_file": "chats.txt",
+    "message_text": null,
+    "source_link": "https://t.me/chanel10fp/3",
+    "use_forward": true,
+    "min_delay": 3.0,
+    "max_delay": 5.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": 2,
+    "status": "idle",
+    "stats": {
+      "sent": 0,
+      "failed": 0,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": null,
+    "end_time": null
+  },
+  "1fb6ddca-ce10-4c2b-bbef-c1568460668f": {
+    "id": "1fb6ddca-ce10-4c2b-bbef-c1568460668f",
+    "title": "8",
+    "account_ids": [
+      "04657991-1dda-41bd-be9d-7b12edb3c295"
+    ],
+    "chats_file": "chats.txt",
+    "message_text": null,
+    "source_link": "https://t.me/chanel10fp/3",
+    "use_forward": true,
+    "min_delay": 3.0,
+    "max_delay": 5.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": 2,
+    "status": "running",
+    "stats": {
+      "sent": 8,
+      "failed": 2,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": "2026-01-16T16:48:09.042516",
+    "end_time": "2026-01-16T16:48:55.501802"
+  },
+  "50903f47-d6a9-436f-9d91-e6397f4058f2": {
+    "id": "50903f47-d6a9-436f-9d91-e6397f4058f2",
+    "title": "12",
+    "account_ids": [
+      "04657991-1dda-41bd-be9d-7b12edb3c295"
+    ],
+    "chats_file": "chats.txt",
+    "message_text": null,
+    "source_link": "https://t.me/chanel10fp/3",
+    "use_forward": true,
+    "min_delay": 3.0,
+    "max_delay": 7.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": 2,
+    "big_delay_minutes": 30.0,
+    "status": "running",
+    "stats": {
+      "sent": 6,
+      "failed": 4,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": "2026-01-16T17:02:15.696113",
+    "end_time": "2026-01-16T17:03:11.360807"
+  }
+}
