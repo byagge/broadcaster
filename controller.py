@@ -1326,11 +1326,11 @@ def handle_all_messages(message):
                     sent_code = loop.run_until_complete(client.send_code_request(phone))
                     logger.info(f"[AUTH] Код отправлен на {phone}")
                     auth_sessions[message.from_user.id] = {
-                        "client": client,
+                        "session_name": session_name,          # было "client": client
                         "phone": phone,
                         "api_id": data["api_id"],
                         "api_hash": data["api_hash"],
-                        "phone_code_hash": sent_code.phone_code_hash
+                        "phone_code_hash": sent_code.phone_code_hash,
                     }
                     bot.send_message(
                         message.chat.id,
@@ -1422,27 +1422,46 @@ def handle_all_messages(message):
             client = None
             try:
                 logger.info(f"[AUTH] Проверка кода для {auth_info.get('phone', 'unknown')}")
-                client = auth_info["client"]
+
+                # ВАЖНО: новый client в этом loop, без auth_info["client"]
+                client = TelegramClient(
+                    auth_info["session_name"],
+                    auth_info["api_id"],
+                    auth_info["api_hash"],
+                )
+
+                loop.run_until_complete(client.connect())
+
                 try:
-                    loop.run_until_complete(client.sign_in(auth_info["phone"], code, phone_code_hash=auth_info["phone_code_hash"]))
-                    logger.info(f"[AUTH] Код принят успешно")
+                    loop.run_until_complete(
+                        client.sign_in(
+                            auth_info["phone"],
+                            code,
+                            phone_code_hash=auth_info["phone_code_hash"],
+                        )
+                    )
+                    logger.info("[AUTH] Код принят успешно")
                 except SessionPasswordNeededError:
-                    logger.info(f"[AUTH] Требуется пароль 2FA")
+                    logger.info("[AUTH] Требуется пароль 2FA")
                     auth_sessions[message.from_user.id]["need_password"] = True
                     set_state(message.from_user.id, "account_add_login_password", {})
-                    bot.send_message(message.chat.id, "🔐 Введите пароль двухфакторной аутентификации:", reply_markup=back_kb())
+                    bot.send_message(
+                        message.chat.id,
+                        "🔐 Введите пароль двухфакторной аутентификации:",
+                        reply_markup=back_kb(),
+                    )
                     return
-                
+
                 me = loop.run_until_complete(client.get_me())
                 logger.info(f"[AUTH] Успешная авторизация: {me.first_name} (@{me.username})")
+
                 phone_str = me.phone or "unknown"
                 session_name_final = f"{me.id}_{phone_str}.session"
-                
-                temp_session_path = f"temp_auth_{message.from_user.id}.session"
+
+                temp_session_path = f"{auth_info['session_name']}.session"
                 final_session_path = session_name_final
-                
+
                 if os.path.exists(temp_session_path):
-                    # Если финальный файл уже существует, удаляем его
                     if os.path.exists(final_session_path):
                         os.remove(final_session_path)
                     try:
@@ -1450,10 +1469,9 @@ def handle_all_messages(message):
                         logger.info(f"[AUTH] Файл сессии переименован: {final_session_path}")
                     except Exception as e:
                         logger.error(f"[AUTH] Ошибка переименования файла: {e}")
-                        # Пробуем скопировать
                         shutil.copy2(temp_session_path, final_session_path)
                         os.remove(temp_session_path)
-                
+
                 accounts = load_accounts()
                 aid = new_account_id()
                 accounts[aid] = account_dict(
@@ -1467,21 +1485,27 @@ def handle_all_messages(message):
                     )
                 )
                 save_accounts(accounts)
+
                 auth_sessions.pop(message.from_user.id, None)
                 clear_state(message.from_user.id)
+
                 logger.info(f"[AUTH] Аккаунт сохранён с ID: {aid}")
                 bot.send_message(
                     message.chat.id,
                     f"✅ Аккаунт авторизован и сохранён!\n\nID: `{aid[:8]}`\nИмя: `{me.first_name}`",
-                    reply_markup=accounts_menu_kb()
+                    reply_markup=accounts_menu_kb(),
                 )
-                loop.run_until_complete(client.disconnect())
+
             except PhoneCodeInvalidError:
                 logger.warning(f"[AUTH] Неверный код для {auth_info.get('phone', 'unknown')}")
                 bot.send_message(message.chat.id, "❌ Неверный код. Попробуйте снова.")
             except Exception as e:
                 logger.error(f"[AUTH] Ошибка при проверке кода: {e}", exc_info=True)
-                bot.send_message(message.chat.id, f"❌ Ошибка: {e}\n\nПопробуйте начать заново.", reply_markup=accounts_menu_kb())
+                bot.send_message(
+                    message.chat.id,
+                    f"❌ Ошибка: {e}\n\nПопробуйте начать заново.",
+                    reply_markup=accounts_menu_kb(),
+                )
                 clear_state(message.from_user.id)
                 auth_sessions.pop(message.from_user.id, None)
             finally:
@@ -1494,9 +1518,10 @@ def handle_all_messages(message):
                     loop.close()
                 except:
                     pass
-        
+
         threading.Thread(target=verify_code, daemon=True).start()
         return
+
 
     if st == "account_add_login_password":
         if text == "⬅️ Назад":
