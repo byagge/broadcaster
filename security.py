@@ -41,7 +41,6 @@ SUSPICIOUS_PATTERNS = [
     b'http://',
     b'https://',
     b'ftp://',
-    b'@',
     
     # Подозрительные команды
     b'exec(',
