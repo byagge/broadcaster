@@ -1,0 +1,172 @@
+2026-01-19 16:24:21,218 - INFO - ==================================================
+2026-01-19 16:24:21,219 - INFO - 🤖 Telegram Sender Bot запускается...
+2026-01-19 16:24:22,020 - INFO - 👤 Администратор: 5777052726
+2026-01-19 16:24:22,020 - INFO - 🔗 Username бота: @ArixAdsManagerBot
+2026-01-19 16:24:22,020 - INFO - 📝 Управление через кнопки, команда /start
+2026-01-19 16:24:22,021 - INFO - ==================================================
+2026-01-19 16:25:22,670 - INFO - ==================================================
+2026-01-19 16:25:22,670 - INFO - 🤖 Telegram Sender Bot запускается...
+2026-01-19 16:25:23,617 - INFO - 👤 Администратор: 7895708340
+2026-01-19 16:25:23,617 - INFO - 🔗 Username бота: @ArixAdsManagerBot
+2026-01-19 16:25:23,617 - INFO - 📝 Управление через кнопки, команда /start
+2026-01-19 16:25:23,617 - INFO - ==================================================
+2026-01-19 16:25:27,624 - ERROR - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 16:25:27,630 - ERROR - Exception traceback:
+Traceback (most recent call last):
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\util.py", line 115, in raise_exceptions
+    raise self.exception_info
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\util.py", line 97, in run
+    task(*args, **kwargs)
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 339, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 197, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2026-01-19 16:25:31,665 - ERROR - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 16:25:31,665 - ERROR - Exception traceback:
+Traceback (most recent call last):
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\util.py", line 115, in raise_exceptions
+    raise self.exception_info
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\util.py", line 97, in run
+    task(*args, **kwargs)
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 339, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 197, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2026-01-19 16:25:36,371 - ERROR - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-19 16:25:36,372 - ERROR - Exception traceback:
+Traceback (most recent call last):
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\util.py", line 115, in raise_exceptions
+    raise self.exception_info
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\util.py", line 97, in run
+    task(*args, **kwargs)
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 339, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenov\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\telebot\apihelper.py", line 197, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2026-01-19 16:26:41,210 - INFO - ==================================================
+2026-01-19 16:26:41,211 - INFO - 🤖 Telegram Sender Bot запускается...
+2026-01-19 16:26:43,834 - INFO - 👤 Администратор: 7895708340
+2026-01-19 16:26:43,834 - INFO - 🔗 Username бота: @testeeeeeeccombot
+2026-01-19 16:26:43,835 - INFO - 📝 Управление через кнопки, команда /start
+2026-01-19 16:26:43,836 - INFO - ==================================================
+2026-01-19 16:27:09,183 - INFO - [BOT] Получено сообщение: 👥 Аккаунты от 7895708340
+2026-01-19 16:27:11,564 - INFO - [BOT] Получено сообщение: 📃 Список аккаунтов от 7895708340
+2026-01-19 16:27:18,581 - INFO - [BOT] Получено сообщение: ⬅️ Назад от 7895708340
+2026-01-19 16:27:21,910 - INFO - [BOT] Получено сообщение: 📨 Рассылки от 7895708340
+2026-01-19 16:27:26,503 - INFO - [BOT] Получено сообщение: ⬅️ Назад от 7895708340
+2026-01-19 16:27:29,452 - INFO - [BOT] Получено сообщение: 📨 Рассылки от 7895708340
+2026-01-19 16:27:32,033 - INFO - [BOT] Получено сообщение: ➕ Создать рассылку от 7895708340
+2026-01-19 16:27:34,717 - INFO - [BOT] Получено сообщение: wdadsa от 7895708340
+2026-01-19 16:27:40,370 - INFO - [BOT] Получено сообщение: 📝 Текст сообщения от 7895708340
+2026-01-19 16:27:43,090 - INFO - [BOT] Получено сообщение: hey от 7895708340
+2026-01-19 16:27:46,754 - INFO - [BOT] Получено сообщение: 04657991 от 7895708340
+2026-01-19 16:28:26,221 - INFO - [BOT] Получено сообщение: chats.txt от 7895708340
+2026-01-19 16:28:29,031 - INFO - [BOT] Получено сообщение: 1 от 7895708340
+2026-01-19 16:28:30,495 - INFO - [BOT] Получено сообщение: 1 от 7895708340
+2026-01-19 16:28:35,789 - INFO - [BOT] Получено сообщение: 1 от 7895708340
+2026-01-19 16:28:38,719 - INFO - [BOT] Получено сообщение: 1 от 7895708340
+2026-01-19 16:28:44,238 - INFO - [BOT] Получено сообщение: 📃 Список рассылок от 7895708340
+2026-01-19 16:28:45,763 - INFO - [BOT] Получено сообщение: 0a9770fa от 7895708340
+2026-01-19 16:28:51,715 - INFO - [BOT] Получено сообщение: 🚀 Запустить от 7895708340
+2026-01-19 16:28:51,715 - INFO - ==================================================
+2026-01-19 16:28:51,716 - INFO - [BOT] ===== ПОЛУЧЕНА КОМАНДА ЗАПУСКА =====
+2026-01-19 16:28:51,716 - INFO - [BOT] Campaign ID: 0a9770fa-729e-4b79-9bb0-fb7bcc2affa0
+2026-01-19 16:28:51,717 - INFO - [BOT] User ID: 7895708340
+2026-01-19 16:28:51,718 - INFO - [BOT] Загружено кампаний: 9
+2026-01-19 16:28:51,719 - INFO - [BOT] Найдено аккаунтов: 1
+2026-01-19 16:28:51,719 - INFO - [BOT] Файл чатов: chats.txt
+2026-01-19 16:28:51,720 - INFO - [BOT] message_text: True, source_link: None
+2026-01-19 16:28:51,720 - INFO - [BOT] Вызов start_campaign_thread для 0a9770fa-729e-4b79-9bb0-fb7bcc2affa0
+2026-01-19 16:28:51,720 - INFO - ==================================================
+2026-01-19 16:28:51,720 - INFO - [BOT] ===== START_CAMPAIGN_THREAD ВЫЗВАН =====
+2026-01-19 16:28:51,721 - INFO - [BOT] Campaign ID: 0a9770fa-729e-4b79-9bb0-fb7bcc2affa0
+2026-01-19 16:28:51,721 - INFO - [BOT] Запуск рассылки 0a9770fa-729e-4b79-9bb0-fb7bcc2affa0
+2026-01-19 16:28:51,723 - INFO - [BOT] Загружено кампаний: 9
+2026-01-19 16:28:51,724 - INFO - [BOT] Загружено аккаунтов: 1
+2026-01-19 16:28:51,724 - INFO - [BOT] Найдена кампания: wdadsa
+2026-01-19 16:28:51,724 - INFO - [BOT] Найдено 1 аккаунтов для рассылки
+2026-01-19 16:28:51,724 - INFO - [BOT] Создание потока для аккаунта 04657991-1dda-41bd-be9d-7b12edb3c295
+2026-01-19 16:28:51,725 - INFO - [BOT] Запуск потока для аккаунта 04657991-1dda-41bd-be9d-7b12edb3c295
+2026-01-19 16:28:51,737 - INFO - [BOT] Поток запущен для аккаунта 04657991-1dda-41bd-be9d-7b12edb3c295, активен: True
+2026-01-19 16:28:51,750 - INFO - [BOT] Запуск отправщика для аккаунта 04657991-1dda-41bd-be9d-7b12edb3c295
+2026-01-19 16:28:51,752 - INFO - [BOT] Создание объектов Campaign и Account
+2026-01-19 16:28:51,752 - INFO - [BOT] Используется файл чатов: chats.txt
+2026-01-19 16:28:51,755 - INFO - [BOT] Рассылка 0a9770fa-729e-4b79-9bb0-fb7bcc2affa0 запущена, статус обновлён
+2026-01-19 16:28:51,755 - INFO - [BOT] Всего потоков: 1, активных: 1
+2026-01-19 16:28:51,756 - INFO - [BOT] start_campaign_thread завершён для 0a9770fa-729e-4b79-9bb0-fb7bcc2affa0
+2026-01-19 16:28:51,759 - INFO - [BOT] Запуск рассылки для аккаунта 04657991-1dda-41bd-be9d-7b12edb3c295
+2026-01-19 16:28:51,764 - INFO - ==================================================
+2026-01-19 16:28:51,766 - INFO - [SENDER] Начало выполнения рассылки
+2026-01-19 16:28:51,769 - INFO - [SENDER] Campaign ID: 0a9770fa-729e-4b79-9bb0-fb7bcc2affa0
+2026-01-19 16:28:51,770 - INFO - [SENDER] Campaign title: wdadsa
+2026-01-19 16:28:51,771 - INFO - [SENDER] Account IDs: ['04657991-1dda-41bd-be9d-7b12edb3c295']
+2026-01-19 16:28:51,771 - INFO - [SENDER] Chats file: chats.txt
+2026-01-19 16:28:51,772 - INFO - [SENDER] Message text: True
+2026-01-19 16:28:51,773 - INFO - [SENDER] Source link: None
+2026-01-19 16:28:51,774 - INFO - [SENDER] Use forward: False
+2026-01-19 16:28:51,775 - INFO - [SENDER] Account: user (user.session)
+2026-01-19 16:28:51,777 - INFO - ==================================================
+2026-01-19 16:28:51,777 - INFO - Конфигурация загружена из Campaign/Account
+2026-01-19 16:28:51,778 - INFO - [SENDER] Загрузка чатов из файла: chats.txt
+2026-01-19 16:28:51,787 - INFO - [SENDER] Загружен чат: https://t.me/trafikstt
+2026-01-19 16:28:51,788 - INFO - [SENDER] Всего загружено 1 чатов
+2026-01-19 16:28:51,843 - INFO - Connecting to 149.154.167.51:443/TcpFull...
+2026-01-19 16:28:52,012 - INFO - Connection to 149.154.167.51:443/TcpFull complete!
+2026-01-19 16:28:53,753 - INFO - Подключен как: Arix (@byarix)
+2026-01-19 16:28:53,753 - INFO - [TIME] Режим ограничен по времени: 1 минут, до 2026-01-19 16:29:53.753020
+2026-01-19 16:28:53,754 - INFO - [START] Начинаем рассылку в 1 чатов
+2026-01-19 16:28:53,755 - INFO - [ITERATION 1] Начинаем новый цикл по чатам
+2026-01-19 16:28:53,755 - INFO - [1/1] Обрабатываем: https://t.me/trafikstt
+2026-01-19 16:28:57,437 - INFO - [OK] Отправлено в ПЕРЕЛИВЩИКИ | ТРАФИК
+2026-01-19 16:28:57,438 - INFO - [DELAY] Ждём 1.0 секунд...
+2026-01-19 16:28:58,440 - INFO - [FINISH] Рассылка завершена!
+2026-01-19 16:28:58,442 - INFO - [STATS] Отправлено: 1
+2026-01-19 16:28:58,442 - INFO - [STATS] Ошибок: 0
+2026-01-19 16:28:58,443 - INFO - [STATS] Пропущено: 0
+2026-01-19 16:28:58,443 - INFO - [STATS] Вступили в чаты: 0
+2026-01-19 16:28:58,452 - INFO - Disconnecting from 149.154.167.51:443/TcpFull...
+2026-01-19 16:28:58,454 - INFO - Disconnection from 149.154.167.51:443/TcpFull complete!
+2026-01-19 16:28:58,475 - INFO - Отключен от Telegram
+2026-01-19 16:28:58,476 - INFO - [BOT] Рассылка завершена для аккаунта 04657991-1dda-41bd-be9d-7b12edb3c295

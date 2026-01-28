@@ -5,6 +5,7 @@ import json
 import os
 import re
 import logging
+import shutil
 from datetime import datetime
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from telethon import TelegramClient
@@ -23,15 +24,27 @@ logger = logging.getLogger(__name__)
 
 from models import Account, Campaign, new_account_id, new_campaign_id, account_dict, campaign_dict, parse_proxy
 from sender import TelegramSender
+from security import (
+    validate_filename, validate_file_path, check_session_file, check_txt_file,
+    validate_api_credentials, validate_proxy_string, sanitize_filename,
+    validate_campaign_data, validate_chat_identifier
+)
 
 # === Настройки бота ===
-API_TOKEN = "8535447409:AAHsEAj1BqzErGW0nzGG-Qh1vcNFGOZYonc"
-ADMIN_ID = 5777052726
+API_TOKEN = "8402180789:AAGEYNtRZADNFQ-RUdvS-pfyTc4eRaWtP3U"
+ADMIN_ID = 7895708340
 
+# === Константы безопасности ===
+MAX_MESSAGE_LENGTH = 4096  # Максимальная длина сообщения Telegram
+MAX_TITLE_LENGTH = 200  # Максимальная длина названия кампании
+MAX_FILENAME_LENGTH = 255  # Максимальная длина имени файла
+
+# === Пути и директории ===
 DATA_DIR = "data"
 ACCOUNTS_FILE = os.path.join(DATA_DIR, "accounts.json")
 CAMPAIGNS_FILE = os.path.join(DATA_DIR, "campaigns.json")
 
+# Создаём директорию для данных
 os.makedirs(DATA_DIR, exist_ok=True)
 
 bot = telebot.TeleBot(API_TOKEN, parse_mode="Markdown")
@@ -47,18 +60,65 @@ def is_admin(user_id: int) -> bool:
 
 
 def load_json(path: str, default):
+    """
+    Безопасная загрузка JSON файла
+    """
+    # Валидация пути
+    is_valid, error_msg = validate_file_path(path)
+    if not is_valid:
+        logger.error(f"[SECURITY] Попытка загрузить файл по небезопасному пути: {path} - {error_msg}")
+        return default
+    
     if not os.path.exists(path):
         return default
     try:
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception:
+    except json.JSONDecodeError as e:
+        logger.error(f"[SECURITY] Ошибка парсинга JSON файла {path}: {e}")
+        return default
+    except Exception as e:
+        logger.error(f"[SECURITY] Ошибка чтения файла {path}: {e}")
         return default
 
 
 def save_json(path: str, data):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    """
+    Безопасное сохранение JSON файла
+    """
+    # Валидация пути
+    is_valid, error_msg = validate_file_path(path)
+    if not is_valid:
+        logger.error(f"[SECURITY] Попытка сохранить файл по небезопасному пути: {path} - {error_msg}")
+        raise ValueError(f"Небезопасный путь: {error_msg}")
+    
+    try:
+        # Создаём директорию если её нет
+        dir_path = os.path.dirname(path)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
+        
+        # Сохраняем во временный файл, затем переименовываем (атомарная операция)
+        temp_path = f"{path}.tmp"
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        # Атомарное переименование
+        if os.path.exists(path):
+            os.replace(temp_path, path)
+        else:
+            os.rename(temp_path, path)
+            
+    except Exception as e:
+        logger.error(f"[SECURITY] Ошибка сохранения файла {path}: {e}", exc_info=True)
+        # Удаляем временный файл при ошибке
+        temp_path = f"{path}.tmp"
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except:
+                pass
+        raise
 
 
 def load_accounts() -> dict:
@@ -309,23 +369,57 @@ def handle_all_messages(message):
         if st == "campaign_create_chats_file":
             doc = message.document
             if doc.file_name.endswith('.txt'):
-                file_info = bot.get_file(doc.file_id)
-                downloaded = bot.download_file(file_info.file_path)
-                chats_file = doc.file_name
+                # Валидация имени файла
+                is_valid, error_msg = validate_filename(doc.file_name)
+                if not is_valid:
+                    logger.warning(f"[SECURITY] Попытка загрузки .txt файла с невалидным именем: {doc.file_name}")
+                    bot.reply_to(message, f"❌ Ошибка безопасности: {error_msg}")
+                    return
                 
-                # Сохраняем файл
-                with open(chats_file, "wb") as f:
-                    f.write(downloaded)
-                
-                cid = data.get("campaign_id")
-                campaigns = load_campaigns()
-                if cid in campaigns:
-                    campaigns[cid]["chats_file"] = chats_file
-                    save_campaigns(campaigns)
-                
-                data["chats_file"] = chats_file
-                set_state(message.from_user.id, "campaign_create_min_delay", data)
-                bot.reply_to(message, f"✅ Файл `{chats_file}` сохранён!\n\n⏱ *Шаг 5/8*\nВведите минимальную задержку между отправками (в секундах, например: `30`):", reply_markup=back_kb())
+                try:
+                    file_info = bot.get_file(doc.file_id)
+                    downloaded = bot.download_file(file_info.file_path)
+                    
+                    # Проверка размера файла
+                    if len(downloaded) == 0:
+                        bot.reply_to(message, "❌ Файл пустой")
+                        return
+                    
+                    # Проверка .txt файла на безопасность
+                    is_safe, error_msg = check_txt_file(doc.file_name, downloaded)
+                    if not is_safe:
+                        logger.warning(f"[SECURITY] Обнаружен небезопасный .txt файл: {doc.file_name} - {error_msg}")
+                        bot.reply_to(message, f"❌ Файл не прошёл проверку безопасности:\n`{error_msg}`")
+                        return
+                    
+                    # Безопасное имя файла
+                    chats_file = sanitize_filename(doc.file_name)
+                    
+                    # Валидация пути
+                    is_valid_path, path_error = validate_file_path(chats_file)
+                    if not is_valid_path:
+                        logger.warning(f"[SECURITY] Небезопасный путь к файлу: {chats_file}")
+                        bot.reply_to(message, f"❌ Ошибка безопасности: {path_error}")
+                        return
+                    
+                    # Сохраняем файл
+                    with open(chats_file, "wb") as f:
+                        f.write(downloaded)
+                    
+                    logger.info(f"[SECURITY] Безопасный .txt файл загружен: {chats_file}")
+                    
+                    cid = data.get("campaign_id")
+                    campaigns = load_campaigns()
+                    if cid in campaigns:
+                        campaigns[cid]["chats_file"] = chats_file
+                        save_campaigns(campaigns)
+                    
+                    data["chats_file"] = chats_file
+                    set_state(message.from_user.id, "campaign_create_min_delay", data)
+                    bot.reply_to(message, f"✅ Файл `{chats_file}` сохранён!\n\n⏱ *Шаг 5/8*\nВведите минимальную задержку между отправками (в секундах, например: `30`):", reply_markup=back_kb())
+                except Exception as e:
+                    logger.error(f"[SECURITY] Ошибка при обработке .txt файла: {e}", exc_info=True)
+                    bot.reply_to(message, f"❌ Ошибка при обработке файла: {e}")
                 return
             else:
                 bot.reply_to(message, "❌ Нужен файл .txt")
@@ -338,38 +432,76 @@ def handle_all_messages(message):
                 bot.reply_to(message, "❌ Нужен файл .session")
                 return
             
-            file_info = bot.get_file(doc.file_id)
-            downloaded = bot.download_file(file_info.file_path)
-            session_filename = doc.file_name
-            with open(session_filename, "wb") as f:
-                f.write(downloaded)
+            # Валидация имени файла
+            is_valid, error_msg = validate_filename(doc.file_name)
+            if not is_valid:
+                logger.warning(f"[SECURITY] Попытка загрузки файла с невалидным именем: {doc.file_name}")
+                bot.reply_to(message, f"❌ Ошибка безопасности: {error_msg}")
+                return
             
-            name = message.caption.strip() if message.caption else session_filename.replace('.session', '')
-            
-            accounts = load_accounts()
-            aid = new_account_id()
-            accounts[aid] = account_dict(
-                Account(
-                    id=aid,
-                    name=name,
-                    session_name=session_filename,
-                    api_id=0,
-                    api_hash="",
-                    proxy=None,
+            try:
+                file_info = bot.get_file(doc.file_id)
+                downloaded = bot.download_file(file_info.file_path)
+                
+                # Проверка размера файла перед проверкой безопасности
+                if len(downloaded) == 0:
+                    bot.reply_to(message, "❌ Файл пустой")
+                    return
+                
+                # Проверка .session файла на безопасность
+                is_safe, error_msg = check_session_file(doc.file_name, downloaded)
+                if not is_safe:
+                    logger.warning(f"[SECURITY] Обнаружен небезопасный .session файл: {doc.file_name} - {error_msg}")
+                    bot.reply_to(message, f"❌ Файл не прошёл проверку безопасности:\n`{error_msg}`\n\n⚠️ Файл может содержать вредоносный код!")
+                    return
+                
+                # Безопасное имя файла
+                session_filename = sanitize_filename(doc.file_name)
+                
+                # Валидация пути
+                is_valid_path, path_error = validate_file_path(session_filename)
+                if not is_valid_path:
+                    logger.warning(f"[SECURITY] Небезопасный путь к файлу: {session_filename}")
+                    bot.reply_to(message, f"❌ Ошибка безопасности: {path_error}")
+                    return
+                
+                # Сохранение файла
+                with open(session_filename, "wb") as f:
+                    f.write(downloaded)
+                
+                logger.info(f"[SECURITY] Безопасный .session файл загружен: {session_filename}")
+                
+                name = message.caption.strip() if message.caption else session_filename.replace('.session', '')
+                # Очистка имени от опасных символов
+                name = sanitize_filename(name) if name else session_filename.replace('.session', '')
+                
+                accounts = load_accounts()
+                aid = new_account_id()
+                accounts[aid] = account_dict(
+                    Account(
+                        id=aid,
+                        name=name,
+                        session_name=session_filename,
+                        api_id=0,
+                        api_hash="",
+                        proxy=None,
+                    )
                 )
-            )
-            save_accounts(accounts)
-            clear_state(message.from_user.id)
-            bot.reply_to(
-                message,
-                f"✅ Аккаунт сохранён!\n\n"
-                f"ID: `{aid[:8]}`\n"
-                f"Название: `{name}`\n"
-                f"Session: `{session_filename}`\n\n"
-                f"⚠️ Не забудьте указать API ID и API Hash в настройках аккаунта!\n\n"
-                f"💡 Отправьте ID аккаунта чтобы открыть его",
-                reply_markup=accounts_menu_kb()
-            )
+                save_accounts(accounts)
+                clear_state(message.from_user.id)
+                bot.reply_to(
+                    message,
+                    f"✅ Аккаунт сохранён!\n\n"
+                    f"ID: `{aid[:8]}`\n"
+                    f"Название: `{name}`\n"
+                    f"Session: `{session_filename}`\n\n"
+                    f"⚠️ Не забудьте указать API ID и API Hash в настройках аккаунта!\n\n"
+                    f"💡 Отправьте ID аккаунта чтобы открыть его",
+                    reply_markup=accounts_menu_kb()
+                )
+            except Exception as e:
+                logger.error(f"[SECURITY] Ошибка при обработке .session файла: {e}", exc_info=True)
+                bot.reply_to(message, f"❌ Ошибка при обработке файла: {e}")
             return
         
         # Если документ отправлен в неподходящий момент
@@ -586,6 +718,18 @@ def handle_all_messages(message):
         if not title:
             bot.reply_to(message, "❌ Название не может быть пустым")
             return
+        
+        # Валидация названия
+        if len(title) > 200:
+            bot.reply_to(message, "❌ Название слишком длинное (максимум 200 символов)")
+            return
+        
+        # Проверка на подозрительные символы
+        if re.search(r'[<>"\']', title):
+            logger.warning(f"[SECURITY] Попытка создать кампанию с подозрительным названием: {title}")
+            bot.reply_to(message, "❌ Название содержит недопустимые символы")
+            return
+        
         data["title"] = title
         set_state(message.from_user.id, "campaign_create_message_type", data)
         bot.send_message(message.chat.id, "📝 *Шаг 2/8*\nВыберите тип сообщения:", reply_markup=message_type_kb())
@@ -856,7 +1000,23 @@ def handle_all_messages(message):
             campaigns[cid]["duration_minutes"] = data.get("duration_minutes")
             campaigns[cid]["big_delay_minutes"] = big_delay_minutes
             campaigns[cid]["account_ids"] = data.get("selected_accounts", [])
+            
+            # Валидация данных кампании перед сохранением
+            campaign_data = {
+                "title": campaigns[cid].get("title", ""),
+                "min_delay": campaigns[cid].get("min_delay", 30),
+                "max_delay": campaigns[cid].get("max_delay", 60),
+                "duration_minutes": campaigns[cid].get("duration_minutes"),
+                "big_delay_minutes": big_delay_minutes,
+            }
+            is_valid, error_msg = validate_campaign_data(campaign_data)
+            if not is_valid:
+                logger.warning(f"[SECURITY] Попытка создать кампанию с невалидными данными: {error_msg}")
+                bot.reply_to(message, f"❌ Ошибка валидации данных: {error_msg}")
+                return
+            
             save_campaigns(campaigns)
+            logger.info(f"[SECURITY] Кампания {cid[:8]} создана с валидными данными")
         
         clear_state(message.from_user.id)
         duration_text = "бесконечный режим" if data.get("duration_minutes") == -1 else f"{data.get('duration_minutes')} минут"
@@ -1002,6 +1162,13 @@ def handle_all_messages(message):
             set_state(message.from_user.id, "account_view", data)
             return
         
+        # Валидация прокси
+        is_valid, error_msg = validate_proxy_string(proxy_str)
+        if not is_valid:
+            logger.warning(f"[SECURITY] Попытка установить невалидный прокси: {proxy_str}")
+            bot.reply_to(message, f"❌ Ошибка валидации прокси: {error_msg}")
+            return
+        
         proxy_dict = parse_proxy(proxy_str)
         if not proxy_dict:
             bot.reply_to(message, "❌ Неверный формат прокси. Используйте: `login:password@ip:port`")
@@ -1011,6 +1178,7 @@ def handle_all_messages(message):
         if aid in accounts:
             accounts[aid]["proxy"] = proxy_str
             save_accounts(accounts)
+            logger.info(f"[SECURITY] Прокси установлен для аккаунта {aid[:8]}")
         
         bot.send_message(message.chat.id, f"✅ Прокси настроен: `{proxy_str}`", reply_markup=account_actions_kb())
         set_state(message.from_user.id, "account_view", data)
@@ -1035,6 +1203,15 @@ def handle_all_messages(message):
             bot.reply_to(message, "❌ Введите число")
             return
         
+        # Валидация API ID (базовая проверка перед сохранением)
+        if api_id <= 0:
+            bot.reply_to(message, "❌ API ID должен быть положительным числом")
+            return
+        
+        if api_id > 999999999:
+            bot.reply_to(message, "❌ API ID выглядит невалидным")
+            return
+        
         data["temp_api_id"] = api_id
         set_state(message.from_user.id, "account_set_api_hash", data)
         bot.send_message(message.chat.id, "🔑 Введите API Hash:", reply_markup=back_kb())
@@ -1053,11 +1230,20 @@ def handle_all_messages(message):
             bot.reply_to(message, "❌ API Hash не может быть пустым")
             return
         
+        # Валидация API credentials
+        temp_api_id = data.get("temp_api_id", 0)
+        is_valid, error_msg = validate_api_credentials(temp_api_id, api_hash)
+        if not is_valid:
+            logger.warning(f"[SECURITY] Попытка установить невалидные API credentials для аккаунта {aid[:8]}")
+            bot.reply_to(message, f"❌ Ошибка валидации: {error_msg}")
+            return
+        
         accounts = load_accounts()
         if aid in accounts:
-            accounts[aid]["api_id"] = data.get("temp_api_id", 0)
+            accounts[aid]["api_id"] = temp_api_id
             accounts[aid]["api_hash"] = api_hash
             save_accounts(accounts)
+            logger.info(f"[SECURITY] API credentials установлены для аккаунта {aid[:8]}")
         
         bot.send_message(message.chat.id, f"✅ API ключи сохранены!\n\nAPI ID: `{data.get('temp_api_id')}`\nAPI Hash: `***`", reply_markup=account_actions_kb())
         set_state(message.from_user.id, "account_view", data)
@@ -1126,13 +1312,19 @@ def handle_all_messages(message):
         def auth_thread():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
+            client = None
             try:
+                logger.info(f"[AUTH] Начало авторизации для номера: {phone}")
                 session_name = f"temp_auth_{message.from_user.id}"
                 client = TelegramClient(session_name, data["api_id"], data["api_hash"])
+                logger.info(f"[AUTH] Подключение к Telegram...")
                 loop.run_until_complete(client.connect())
+                logger.info(f"[AUTH] Подключено, проверка авторизации...")
                 
                 if not loop.run_until_complete(client.is_user_authorized()):
+                    logger.info(f"[AUTH] Аккаунт не авторизован, запрос кода...")
                     sent_code = loop.run_until_complete(client.send_code_request(phone))
+                    logger.info(f"[AUTH] Код отправлен на {phone}")
                     auth_sessions[message.from_user.id] = {
                         "client": client,
                         "phone": phone,
@@ -1147,16 +1339,32 @@ def handle_all_messages(message):
                     )
                 else:
                     me = loop.run_until_complete(client.get_me())
-                    session_name_final = f"{me.id}_{me.phone}.session"
-                    if os.path.exists(f"{session_name}.session"):
-                        os.rename(f"{session_name}.session", session_name_final)
+                    logger.info(f"[AUTH] Аккаунт уже авторизован: {me.first_name} (@{me.username})")
+                    phone_str = me.phone or "unknown"
+                    session_name_final = f"{me.id}_{phone_str}.session"
+                    
+                    temp_session_path = f"{session_name}.session"
+                    final_session_path = session_name_final
+                    
+                    if os.path.exists(temp_session_path):
+                        # Если финальный файл уже существует, удаляем его
+                        if os.path.exists(final_session_path):
+                            os.remove(final_session_path)
+                        try:
+                            shutil.move(temp_session_path, final_session_path)
+                            logger.info(f"[AUTH] Файл сессии переименован: {final_session_path}")
+                        except Exception as e:
+                            logger.error(f"[AUTH] Ошибка переименования файла: {e}")
+                            # Пробуем скопировать
+                            shutil.copy2(temp_session_path, final_session_path)
+                            os.remove(temp_session_path)
                     
                     accounts = load_accounts()
                     aid = new_account_id()
                     accounts[aid] = account_dict(
                         Account(
                             id=aid,
-                            name=f"{me.first_name} {me.last_name or ''}".strip() or me.phone,
+                            name=f"{me.first_name} {me.last_name or ''}".strip() or phone_str,
                             session_name=session_name_final,
                             api_id=data["api_id"],
                             api_hash=data["api_hash"],
@@ -1165,6 +1373,7 @@ def handle_all_messages(message):
                     )
                     save_accounts(accounts)
                     clear_state(message.from_user.id)
+                    logger.info(f"[AUTH] Аккаунт сохранён с ID: {aid}")
                     bot.send_message(
                         message.chat.id,
                         f"✅ Аккаунт авторизован и сохранён!\n\nID: `{aid[:8]}`\nИмя: `{me.first_name}`",
@@ -1172,10 +1381,23 @@ def handle_all_messages(message):
                     )
                     loop.run_until_complete(client.disconnect())
             except Exception as e:
-                bot.send_message(message.chat.id, f"❌ Ошибка авторизации: {e}", reply_markup=accounts_menu_kb())
+                logger.error(f"[AUTH] Ошибка авторизации: {e}", exc_info=True)
+                try:
+                    bot.send_message(message.chat.id, f"❌ Ошибка авторизации: {e}\n\nПопробуйте ещё раз.", reply_markup=accounts_menu_kb())
+                except:
+                    pass
                 clear_state(message.from_user.id)
+                auth_sessions.pop(message.from_user.id, None)
             finally:
-                loop.close()
+                try:
+                    if client:
+                        loop.run_until_complete(client.disconnect())
+                except Exception as e:
+                    logger.error(f"[AUTH] Ошибка при отключении: {e}")
+                try:
+                    loop.close()
+                except:
+                    pass
         
         threading.Thread(target=auth_thread, daemon=True).start()
         return
@@ -1197,27 +1419,47 @@ def handle_all_messages(message):
         def verify_code():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
+            client = None
             try:
+                logger.info(f"[AUTH] Проверка кода для {auth_info.get('phone', 'unknown')}")
                 client = auth_info["client"]
                 try:
                     loop.run_until_complete(client.sign_in(auth_info["phone"], code, phone_code_hash=auth_info["phone_code_hash"]))
+                    logger.info(f"[AUTH] Код принят успешно")
                 except SessionPasswordNeededError:
+                    logger.info(f"[AUTH] Требуется пароль 2FA")
                     auth_sessions[message.from_user.id]["need_password"] = True
                     set_state(message.from_user.id, "account_add_login_password", {})
                     bot.send_message(message.chat.id, "🔐 Введите пароль двухфакторной аутентификации:", reply_markup=back_kb())
                     return
                 
                 me = loop.run_until_complete(client.get_me())
-                session_name_final = f"{me.id}_{me.phone}.session"
-                if os.path.exists(f"temp_auth_{message.from_user.id}.session"):
-                    os.rename(f"temp_auth_{message.from_user.id}.session", session_name_final)
+                logger.info(f"[AUTH] Успешная авторизация: {me.first_name} (@{me.username})")
+                phone_str = me.phone or "unknown"
+                session_name_final = f"{me.id}_{phone_str}.session"
+                
+                temp_session_path = f"temp_auth_{message.from_user.id}.session"
+                final_session_path = session_name_final
+                
+                if os.path.exists(temp_session_path):
+                    # Если финальный файл уже существует, удаляем его
+                    if os.path.exists(final_session_path):
+                        os.remove(final_session_path)
+                    try:
+                        shutil.move(temp_session_path, final_session_path)
+                        logger.info(f"[AUTH] Файл сессии переименован: {final_session_path}")
+                    except Exception as e:
+                        logger.error(f"[AUTH] Ошибка переименования файла: {e}")
+                        # Пробуем скопировать
+                        shutil.copy2(temp_session_path, final_session_path)
+                        os.remove(temp_session_path)
                 
                 accounts = load_accounts()
                 aid = new_account_id()
                 accounts[aid] = account_dict(
                     Account(
                         id=aid,
-                        name=f"{me.first_name} {me.last_name or ''}".strip() or me.phone,
+                        name=f"{me.first_name} {me.last_name or ''}".strip() or phone_str,
                         session_name=session_name_final,
                         api_id=auth_info["api_id"],
                         api_hash=auth_info["api_hash"],
@@ -1227,6 +1469,7 @@ def handle_all_messages(message):
                 save_accounts(accounts)
                 auth_sessions.pop(message.from_user.id, None)
                 clear_state(message.from_user.id)
+                logger.info(f"[AUTH] Аккаунт сохранён с ID: {aid}")
                 bot.send_message(
                     message.chat.id,
                     f"✅ Аккаунт авторизован и сохранён!\n\nID: `{aid[:8]}`\nИмя: `{me.first_name}`",
@@ -1234,13 +1477,23 @@ def handle_all_messages(message):
                 )
                 loop.run_until_complete(client.disconnect())
             except PhoneCodeInvalidError:
+                logger.warning(f"[AUTH] Неверный код для {auth_info.get('phone', 'unknown')}")
                 bot.send_message(message.chat.id, "❌ Неверный код. Попробуйте снова.")
             except Exception as e:
-                bot.send_message(message.chat.id, f"❌ Ошибка: {e}", reply_markup=accounts_menu_kb())
+                logger.error(f"[AUTH] Ошибка при проверке кода: {e}", exc_info=True)
+                bot.send_message(message.chat.id, f"❌ Ошибка: {e}\n\nПопробуйте начать заново.", reply_markup=accounts_menu_kb())
                 clear_state(message.from_user.id)
                 auth_sessions.pop(message.from_user.id, None)
             finally:
-                loop.close()
+                try:
+                    if client:
+                        loop.run_until_complete(client.disconnect())
+                except Exception as e:
+                    logger.error(f"[AUTH] Ошибка при отключении: {e}")
+                try:
+                    loop.close()
+                except:
+                    pass
         
         threading.Thread(target=verify_code, daemon=True).start()
         return
@@ -1262,21 +1515,40 @@ def handle_all_messages(message):
         def verify_password():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
+            client = None
             try:
+                logger.info(f"[AUTH] Проверка пароля 2FA для {auth_info.get('phone', 'unknown')}")
                 client = auth_info["client"]
                 loop.run_until_complete(client.sign_in(password=password))
+                logger.info(f"[AUTH] Пароль принят успешно")
                 
                 me = loop.run_until_complete(client.get_me())
-                session_name_final = f"{me.id}_{me.phone}.session"
-                if os.path.exists(f"temp_auth_{message.from_user.id}.session"):
-                    os.rename(f"temp_auth_{message.from_user.id}.session", session_name_final)
+                logger.info(f"[AUTH] Успешная авторизация с паролем: {me.first_name} (@{me.username})")
+                phone_str = me.phone or "unknown"
+                session_name_final = f"{me.id}_{phone_str}.session"
+                
+                temp_session_path = f"temp_auth_{message.from_user.id}.session"
+                final_session_path = session_name_final
+                
+                if os.path.exists(temp_session_path):
+                    # Если финальный файл уже существует, удаляем его
+                    if os.path.exists(final_session_path):
+                        os.remove(final_session_path)
+                    try:
+                        shutil.move(temp_session_path, final_session_path)
+                        logger.info(f"[AUTH] Файл сессии переименован: {final_session_path}")
+                    except Exception as e:
+                        logger.error(f"[AUTH] Ошибка переименования файла: {e}")
+                        # Пробуем скопировать
+                        shutil.copy2(temp_session_path, final_session_path)
+                        os.remove(temp_session_path)
                 
                 accounts = load_accounts()
                 aid = new_account_id()
                 accounts[aid] = account_dict(
                     Account(
                         id=aid,
-                        name=f"{me.first_name} {me.last_name or ''}".strip() or me.phone,
+                        name=f"{me.first_name} {me.last_name or ''}".strip() or phone_str,
                         session_name=session_name_final,
                         api_id=auth_info["api_id"],
                         api_hash=auth_info["api_hash"],
@@ -1286,6 +1558,7 @@ def handle_all_messages(message):
                 save_accounts(accounts)
                 auth_sessions.pop(message.from_user.id, None)
                 clear_state(message.from_user.id)
+                logger.info(f"[AUTH] Аккаунт сохранён с ID: {aid}")
                 bot.send_message(
                     message.chat.id,
                     f"✅ Аккаунт авторизован и сохранён!\n\nID: `{aid[:8]}`\nИмя: `{me.first_name}`",
@@ -1293,11 +1566,20 @@ def handle_all_messages(message):
                 )
                 loop.run_until_complete(client.disconnect())
             except Exception as e:
-                bot.send_message(message.chat.id, f"❌ Ошибка: {e}", reply_markup=accounts_menu_kb())
+                logger.error(f"[AUTH] Ошибка при проверке пароля: {e}", exc_info=True)
+                bot.send_message(message.chat.id, f"❌ Ошибка: {e}\n\nПопробуйте начать заново.", reply_markup=accounts_menu_kb())
                 clear_state(message.from_user.id)
                 auth_sessions.pop(message.from_user.id, None)
             finally:
-                loop.close()
+                try:
+                    if client:
+                        loop.run_until_complete(client.disconnect())
+                except Exception as e:
+                    logger.error(f"[AUTH] Ошибка при отключении: {e}")
+                try:
+                    loop.close()
+                except:
+                    pass
         
         threading.Thread(target=verify_password, daemon=True).start()
         return

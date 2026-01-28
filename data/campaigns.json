@@ -203,5 +203,32 @@
     },
     "start_time": "2026-01-16T17:02:15.696113",
     "end_time": "2026-01-16T17:03:11.360807"
+  },
+  "0a9770fa-729e-4b79-9bb0-fb7bcc2affa0": {
+    "id": "0a9770fa-729e-4b79-9bb0-fb7bcc2affa0",
+    "title": "wdadsa",
+    "account_ids": [
+      "04657991-1dda-41bd-be9d-7b12edb3c295"
+    ],
+    "chats_file": "chats.txt",
+    "message_text": "hey",
+    "source_link": null,
+    "use_forward": false,
+    "min_delay": 1.0,
+    "max_delay": 1.0,
+    "typing_min": 2.0,
+    "typing_max": 5.0,
+    "typing_delay": true,
+    "duration_minutes": 1,
+    "big_delay_minutes": 1.0,
+    "status": "running",
+    "stats": {
+      "sent": 2,
+      "failed": 0,
+      "skipped": 0,
+      "joined": 0
+    },
+    "start_time": "2026-01-19T16:28:51.742433",
+    "end_time": "2026-01-19T16:28:58.445559"
   }
 }
