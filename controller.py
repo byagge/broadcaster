@@ -31,7 +31,7 @@ from security import (
 )
 
 # === Настройки бота ===
-API_TOKEN = "8402180789:AAGEYNtRZADNFQ-RUdvS-pfyTc4eRaWtP3U"
+API_TOKEN = "8558704873:AAFux8GDq-q3dDM_VUJnGKS0zp-Xv7lah-s"
 ADMIN_ID = 7895708340
 
 # === Константы безопасности ===
