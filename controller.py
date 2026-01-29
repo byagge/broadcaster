@@ -1609,22 +1609,41 @@ def handle_all_messages(message):
         threading.Thread(target=verify_password, daemon=True).start()
         return
 
-
 if __name__ == "__main__":
+    import time
+    import telebot.apihelper as apihelper
+
+    apihelper.READ_TIMEOUT = 90
+    apihelper.CONNECT_TIMEOUT = 30
+    apihelper.SESSION_TIME_TO_LIVE = 5 * 60
+
     logger.info("=" * 50)
     logger.info("🤖 Telegram Sender Bot запускается...")
+
     try:
         bot_info = bot.get_me()
         logger.info(f"👤 Администратор: {ADMIN_ID}")
         logger.info(f"🔗 Username бота: @{bot_info.username}")
         logger.info("📝 Управление через кнопки, команда /start")
         logger.info("=" * 50)
+
         print("🤖 Telegram Sender Bot запущен...")
         print(f"👤 Администратор: {ADMIN_ID}")
         print(f"🔗 Username бота: @{bot_info.username}")
         print("📝 Управление через кнопки, команда /start")
-        print(f"📋 Логи пишутся в bot.log")
-        bot.polling(none_stop=True)
+        print("📋 Логи пишутся в bot.log")
+
     except Exception as e:
-        logger.error(f"Критическая ошибка при запуске бота: {e}", exc_info=True)
-        raise
+        logger.error(f"[BOT] Ошибка инициализации: {e}", exc_info=True)
+
+    while True:
+        try:
+            bot.polling(
+                none_stop=True,
+                interval=0,
+                timeout=60,
+                long_polling_timeout=50,
+            )
+        except Exception as e:
+            logger.exception(f"[BOT] polling упал, перезапуск через 5 сек: {e}")
+            time.sleep(5)
